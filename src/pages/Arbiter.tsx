@@ -1,36 +1,124 @@
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+
+const Dashboard3DCard = () => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState("perspective(1000px) rotateX(6deg) rotateY(-8deg) rotateZ(1deg)");
+  const [promptsCount, setPromptsCount] = useState(1243);
+  const [piiBlocked, setPiiBlocked] = useState(47);
+  const [injectionsStopped, setInjectionsStopped] = useState(3);
+
+  // Live telemetry pulse simulation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPromptsCount((prev) => prev + Math.floor(Math.random() * 3) + 1);
+      if (Math.random() > 0.6) setPiiBlocked((prev) => prev + 1);
+      if (Math.random() > 0.85) setInjectionsStopped((prev) => prev + 1);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -12;
+    const rotateY = ((x - centerX) / centerX) * 12;
+    setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.03, 1.03, 1.03)`);
+  };
+
+  const handleMouseLeave = () => {
+    setTransform("perspective(1000px) rotateX(6deg) rotateY(-8deg) rotateZ(1deg)");
+  };
+
+  return (
+    <div className="lg:col-span-5 [perspective:1000px] py-4">
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="rounded-xl overflow-hidden surface-mid transition-all duration-300 ease-out cursor-pointer group"
+        style={{
+          transform,
+          transformStyle: "preserve-3d",
+          border: "1px solid rgba(255,255,255,0.12)",
+          boxShadow: "0 30px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px 0 rgba(15, 107, 94, 0.25)"
+        }}
+      >
+        <div className="relative h-10 flex items-center px-4 border-b border-cream-soft bg-surface-dark/95 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#FF5F57] inline-block" />
+            <span className="h-2 w-2 rounded-full bg-[#FFBD2E] inline-block" />
+            <span className="h-2 w-2 rounded-full bg-[#28C840] inline-block" />
+          </div>
+          <div className="absolute left-1/2 -translate-x-1/2 font-mono text-[11px] text-cream/40 flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            arbiter.foretyx.in/console
+          </div>
+        </div>
+
+        <div className="p-7 space-y-6 bg-gradient-to-b from-surface-mid to-surface-dark">
+          <div>
+            <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-cream/40 font-semibold flex items-center justify-between">
+              <span>Today</span>
+              <span className="font-mono text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/20">
+                LIVE TELEMETRY
+              </span>
+            </div>
+            <div className="mt-2 display-sans text-[44px] text-cream leading-none font-bold tracking-tight">
+              {promptsCount.toLocaleString()}
+            </div>
+            <div className="mt-1 font-body text-[13px] text-cream/55 flex items-center gap-2">
+              prompts processed
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-lg border border-cream-soft/60 p-4 bg-white/5 backdrop-blur-sm transition-all group-hover:border-teal-light/40">
+              <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-teal-light font-medium">PII blocked</div>
+              <div className="mt-1 display-sans text-[26px] text-cream font-bold">{piiBlocked}</div>
+            </div>
+            <div className="rounded-lg border border-cream-soft/60 p-4 bg-white/5 backdrop-blur-sm transition-all group-hover:border-teal-light/40">
+              <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-teal-light font-medium">Injections stopped</div>
+              <div className="mt-1 display-sans text-[26px] text-cream font-bold">{injectionsStopped}</div>
+            </div>
+          </div>
+
+          <div className="font-mono text-[11px] leading-relaxed text-cream/70 space-y-2 pt-2 border-t border-cream-soft/40">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> Enclave attested
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> PCR0: a7f2c8e1...
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 font-bold">✓</span> 0 bytes raw PII egressed
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Arbiter = () => {
   return (
     <div className="dark min-h-screen bg-surface-dark text-cream">
-      {/* TOP UTILITY BAR */}
-      <div className="surface-mid border-b border-cream-soft">
-        <div className="container h-8 flex items-center justify-between">
-          <span className="flex items-center gap-2 font-mono text-[11px] text-cream/70">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-status-ping" style={{ background: "#28C840" }} />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "#28C840" }} />
-            </span>
-            India · Mumbai region operational
-          </span>
-          <div className="hidden sm:flex items-center gap-6 font-sans text-[12px] text-cream/60">
-            <a href="#" className="hover:text-cream">Trust center</a>
-            <a href="#" className="hover:text-cream">Docs</a>
-            <a href="#" className="hover:text-cream">Contact sales</a>
-          </div>
-        </div>
-      </div>
+
 
       {/* NAV */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-surface-dark/95 border-b border-cream-soft">
         <div className="container h-16 flex items-center justify-between">
           <Link to="/arbiter"><Logo variant="arbiter" tone="cream" /></Link>
           <nav className="hidden md:flex items-center gap-9 font-sans text-[14px] text-cream/60">
-            <a href="#protocol"   className="hover:text-cream transition-colors">Protocol</a>
-            <a href="#why"        className="hover:text-cream transition-colors">Why Arbiter</a>
-            <a href="#compliance" className="hover:text-cream transition-colors">Compliance</a>
-            <Link to="/" className="hover:text-cream transition-colors">Foretyx</Link>
+            <a href="#protocol"   className="hover:text-cream transition-colors nav-link-green-underline">Protocol</a>
+            <a href="#why"        className="hover:text-cream transition-colors nav-link-green-underline">Why Arbiter</a>
+            <a href="#compliance" className="hover:text-cream transition-colors nav-link-green-underline">Compliance</a>
+            <Link to="/" className="hover:text-cream transition-colors nav-link-green-underline">Foretyx</Link>
           </nav>
           <Link to="/dashboard" target="_blank" rel="noopener noreferrer" className="btn-primary text-[12px]">
             Open console <span className="arrow">→</span>
@@ -56,7 +144,7 @@ const Arbiter = () => {
 
       {/* HERO */}
       <section className="surface-dark border-b border-cream-soft" style={{ background: "#111210" }}>
-        <div className="container pt-20 pb-[100px] grid lg:grid-cols-12 gap-12 items-center">
+        <div className="container pt-10 sm:pt-12 pb-[72px] grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
             <a
               href="#"
@@ -70,22 +158,22 @@ const Arbiter = () => {
               New · DPDP Act 2023 compliance pack <span className="opacity-60">→</span>
             </a>
 
-            <h1 className="display-sans text-[56px] sm:text-[72px] lg:text-[88px] text-cream mt-6">
+            <h1 className="display-sans text-[56px] sm:text-[72px] lg:text-[88px] text-cream mt-4">
               Use any LLM.<br />
               Leak nothing.
             </h1>
 
-            <p className="mt-7 max-w-[480px] font-body text-[18px] leading-[1.6] text-cream/85">
+            <p className="mt-5 max-w-[480px] font-body text-[18px] leading-[1.6] text-cream/85">
               Arbiter is Foretyx's enterprise AI security gateway. Every prompt is
               processed inside a cryptographic <strong className="font-medium text-cream">enclave</strong>{" "}
               before anything reaches an external LLM. We cannot read it. Nobody can.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link to="/dashboard" target="_blank" rel="noopener noreferrer" className="btn-primary">
                 Start free pilot <span className="arrow">→</span>
               </Link>
-              <a href="#" className="btn-ghost">Talk to security team</a>
+              <a href="#" className="btn-outline-cream">Talk to security team</a>
             </div>
 
             <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 font-sans text-[13px] text-cream/60">
@@ -97,43 +185,8 @@ const Arbiter = () => {
             </div>
           </div>
 
-          {/* Browser-chrome dashboard mock — no device frame */}
-          <div className="lg:col-span-5">
-            <div className="rounded-lg overflow-hidden surface-mid" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="relative h-9 flex items-center px-3 border-b border-cream-soft bg-surface-dark">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#FF5F57", height: 6, width: 6 }} />
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#FFBD2E", height: 6, width: 6 }} />
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#28C840", height: 6, width: 6 }} />
-                </div>
-                <div className="absolute left-1/2 -translate-x-1/2 font-mono text-[11px] text-cream/30">
-                  arbiter.foretyx.in/console
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-cream/40">Today</div>
-                <div className="mt-1 display-sans text-[40px] text-cream leading-none">1,243</div>
-                <div className="mt-1 font-body text-[13px] text-cream/55">prompts processed</div>
-
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="rounded-md border border-cream-soft p-4">
-                    <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-teal-light">PII blocked</div>
-                    <div className="mt-1 display-sans text-[24px] text-cream">47</div>
-                  </div>
-                  <div className="rounded-md border border-cream-soft p-4">
-                    <div className="font-sans text-[10px] uppercase tracking-[0.14em] text-teal-light">Injections stopped</div>
-                    <div className="mt-1 display-sans text-[24px] text-cream">3</div>
-                  </div>
-                </div>
-
-                <div className="mt-6 font-mono text-[11px] leading-relaxed text-cream/60 space-y-1">
-                  <div><span className="text-teal-light">✓</span> Enclave attested</div>
-                  <div><span className="text-teal-light">✓</span> PCR0: a7f2c8e1...</div>
-                  <div><span className="text-teal-light">✓</span> 0 bytes raw PII egressed</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* 3D Interactive Console Card */}
+          <Dashboard3DCard />
         </div>
       </section>
 
@@ -280,7 +333,7 @@ const Arbiter = () => {
               <Link to="/dashboard" className="btn-primary">
                 Start free pilot <span className="arrow">→</span>
               </Link>
-              <a href="#" className="btn-ghost">Talk to security team</a>
+              <a href="#" className="btn-outline-cream">Talk to security team</a>
             </div>
           </div>
         </div>

@@ -146,14 +146,13 @@ const Landing = () => {
         <div className="container flex h-16 items-center justify-between">
           <Link to="/"><Logo /></Link>
           <nav className="hidden md:flex items-center gap-9 text-[14px] font-sans text-ink/65">
-            <a href="#research" className="hover:text-ink transition-colors">Research</a>
-            <Link to="/arbiter" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">Products</Link>
-            <a href="#firm" className="hover:text-ink transition-colors">Team</a>
+            <a href="#research" className="hover:text-ink transition-colors nav-link-green-underline">Research</a>
+            <Link to="/arbiter" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors nav-link-green-underline">Products</Link>
+            <a href="#firm" className="hover:text-ink transition-colors nav-link-green-underline">Team</a>
           </nav>
           <a
             href="#research"
-            className="inline-flex items-center gap-2 font-sans font-medium text-[12px] uppercase tracking-[0.06em] text-ink hover:text-ink"
-            style={{ border: "1.5px solid rgba(28,25,23,0.3)", padding: "10px 20px", borderRadius: "4px" }}
+            className="btn-outline-teal text-[12px] px-5 py-2.5"
           >
             Our Research <span className="arrow">→</span>
           </a>
@@ -193,8 +192,7 @@ const Landing = () => {
             <div className="mt-12 flex flex-wrap items-center gap-8">
               <a
                 href="#research"
-                className="inline-flex items-center gap-2 font-sans font-medium text-[13px] uppercase tracking-[0.06em] text-ink"
-                style={{ border: "1.5px solid currentColor", padding: "12px 24px", borderRadius: "4px" }}
+                className="btn-outline-teal text-[13px] px-6 py-3"
               >
                 Our Research <span className="arrow">→</span>
               </a>

@@ -25,8 +25,6 @@ interface PaperReaderDialogProps {
   onClose: () => void;
 }
 
-import { generatePaperPDF } from "@/lib/pdfGenerator";
-
 export function PaperReaderDialog({ paper, isOpen, onClose }: PaperReaderDialogProps) {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);

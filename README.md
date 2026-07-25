@@ -7,19 +7,19 @@
 
 ---
 
-## 🌟 Overview
+## Overview
 
 **Foretyx** is an independent AI security research firm and enterprise software suite. **Arbiter** is Foretyx's flagship enterprise AI security gateway. Every prompt and data payload is processed inside a hardware-attested **Trusted Execution Environment (TEE) enclave** before reaching external LLMs, ensuring **zero raw PII egress**.
 
 ### Key Highlights
-- **🛡️ Arbiter Security Enclave**: Hardware-attested TEE tokenization preventing PII leaks across 44+ India-specific entities (Aadhaar, PAN, ABHA ID, IFSC, and financial records).
-- **📚 Interactive Security Research Library**: Complete catalog of peer-reviewed threat models, CVE disclosures (e.g., CVE-2026-1184), and red-teaming methodologies with **spec-compliant Adobe Acrobat PDF downloads**.
-- **⚡ Modern High-Performance Stack**: Built with React 18, TypeScript, Vite, Tailwind CSS, Radix UI / shadcn components, and TanStack Query.
-- **📊 Compliance & Audit Console**: Live telemetry, rule policy enforcement, hardware key management, and complete audit logging.
+- **Arbiter Security Enclave**: Hardware-attested TEE tokenization preventing PII leaks across 44+ India-specific entities (Aadhaar, PAN, ABHA ID, IFSC, and financial records).
+- **Interactive Security Research Library**: Complete catalog of peer-reviewed threat models, CVE disclosures (e.g., CVE-2026-1184), and red-teaming methodologies with **spec-compliant Adobe Acrobat PDF downloads**.
+- **Modern High-Performance Stack**: Built with React 18, TypeScript, Vite, Tailwind CSS, Radix UI / shadcn components, and TanStack Query.
+- **Compliance & Audit Console**: Live telemetry, rule policy enforcement, hardware key management, and complete audit logging.
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 foretyx-guardian/
@@ -50,7 +50,7 @@ foretyx-guardian/
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Framework**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [Radix UI](https://www.radix-ui.com/) / [shadcn/ui](https://ui.shadcn.com/)
@@ -60,7 +60,7 @@ foretyx-guardian/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone the repository
 ```bash
@@ -87,7 +87,7 @@ npm run build
 
 ---
 
-## 📄 License & Attestation
+## License & Attestation
 
 - Research publications released under **Creative Commons BY-NC 4.0**.
 - Software components licensed under **MIT License**.
