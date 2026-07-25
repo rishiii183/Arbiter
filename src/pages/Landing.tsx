@@ -103,7 +103,6 @@ const Landing = () => {
             <a href="#research" className="hover:text-ink transition-colors">Research</a>
             <Link to="/arbiter" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">Products</Link>
             <a href="#firm" className="hover:text-ink transition-colors">Team</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">GitHub</a>
           </nav>
           <a
             href="#research"
@@ -182,7 +181,7 @@ const Landing = () => {
               {
                 t: "Open source",
                 d: "Libraries and tools released to the security community under permissive licenses.",
-                link: { label: "GitHub", href: "https://github.com", to: false, target: "_blank" },
+                link: { label: "Libraries", href: "#research", to: false },
               },
             ].map((p) => (
               <div key={p.t}>
