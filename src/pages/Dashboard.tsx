@@ -32,11 +32,22 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import { checkBackendHealth, HealthResponse } from "@/lib/api";
+
 const trend = [22, 28, 24, 36, 30, 42, 38, 48, 44, 56, 52, 64, 58, 70, 66, 78, 72, 82, 76, 88, 84, 92];
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [globeModalOpen, setGlobeModalOpen] = useState(false);
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+
+  useEffect(() => {
+    checkBackendHealth().then(setHealth);
+    const interval = setInterval(() => {
+      checkBackendHealth().then(setHealth);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AppShell>
@@ -44,9 +55,10 @@ const Dashboard = () => {
       <div className="flex flex-wrap items-start justify-between gap-6 mb-8">
         <div>
           <h1 className="display text-3xl md:text-4xl">Welcome back, Riya</h1>
-          <p className="mt-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Local data plane is stable
-            <span className="text-foreground/80 normal-case tracking-normal ml-2">· 82ms today</span>
+          <p className="mt-2 text-xs uppercase tracking-[0.18em] text-muted-foreground flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${health ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
+            <span>{health ? `FastAPI Data Plane Connected (v${health.version})` : "Connecting to Data Plane (localhost:8000)..."}</span>
+            <span className="text-foreground/80 normal-case tracking-normal ml-2">· http://localhost:8000</span>
           </p>
         </div>
 
