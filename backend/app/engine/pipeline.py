@@ -208,20 +208,22 @@ class GuardPipeline:
         timings["ml_guard_ms"] = (time.perf_counter() - t_phase) * 1000
 
         if ml_verdict == "block":
+            block_thresh = getattr(self.settings, "ml_block_threshold", 0.85)
             security_flags.append(
                 {
                     "guard": "ml_guard",
                     "reason": BlockReason.ML_GUARD_TRIGGERED,
-                    "detail": f"ML guard score {ml_score:.4f} >= block threshold {self.settings.ml_block_threshold}",
+                    "detail": f"ML guard score {ml_score:.4f} >= block threshold {block_thresh}",
                     "injection": True,
                 }
             )
         elif ml_verdict == "escalate":
+            esc_thresh = getattr(self.settings, "ml_escalate_threshold", 0.50)
             security_flags.append(
                 {
                     "guard": "ml_guard",
                     "reason": BlockReason.ML_GUARD_TRIGGERED,
-                    "detail": f"ML guard score {ml_score:.4f} >= escalation threshold {self.settings.ml_escalate_threshold}",
+                    "detail": f"ML guard score {ml_score:.4f} >= escalation threshold {esc_thresh}",
                     "injection": True,
                 }
             )
