@@ -36,13 +36,22 @@ class PolicyEngine:
     def _load(self):
         """Load policy from disk. Called at startup and on refresh."""
         if not POLICY_PATH.exists():
-            logger.error(
-                "policy_file_missing",
-                path=str(POLICY_PATH),
-                action="fail_closed",
-            )
-            self._cached_policy = None
-            return
+            try:
+                POLICY_PATH.parent.mkdir(parents=True, exist_ok=True)
+                default_policy = PolicyBundle(
+                    policy_version="1.0.0",
+                    org_id="org_default",
+                    allowed_models=["claude-sonnet-4-5", "gpt-4o", "llama-3.3-70b-versatile"]
+                )
+                with open(POLICY_PATH, "w") as f:
+                    json.dump(default_policy.model_dump(mode="json"), f, indent=2)
+                self._cached_policy = default_policy
+                logger.info("default_policy_created", path=str(POLICY_PATH))
+                return
+            except Exception as e:
+                logger.error("default_policy_creation_failed", error=str(e))
+                self._cached_policy = None
+                return
 
         try:
             with open(POLICY_PATH, "r") as f:
