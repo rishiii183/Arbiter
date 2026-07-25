@@ -102,7 +102,7 @@
   }
 
   html {
-    font-family: 'Jost', 'Söhne', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -117,13 +117,13 @@
 
   /* Editorial display — serif (Playfair as licensed-fallback for Freight) */
   .display-serif {
-    font-family: 'Playfair Display', 'Freight Display Pro', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 400;
     letter-spacing: -0.015em;
     line-height: 1.02;
   }
   .display-serif-medium {
-    font-family: 'Playfair Display', 'Freight Display Pro', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 500;
     letter-spacing: -0.01em;
     line-height: 1.05;
@@ -131,7 +131,7 @@
 
   /* Geometric sans for Arbiter product hero (Outfit as Satoshi/Clash fallback) */
   .display-sans {
-    font-family: 'Outfit', 'Satoshi', 'Clash Display', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     font-weight: 900;
     letter-spacing: -0.025em;
     line-height: 1.0;
@@ -139,10 +139,9 @@
 
   /* Brand sans — Inter as Neue Haas Grotesk fallback */
   .font-brand {
-    font-family: 'Inter', 'Neue Haas Grotesk Display', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "ss01", "cv11";
   }
-  .font-display { @apply font-brand; font-weight: 500; letter-spacing: -0.01em; }
   .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }

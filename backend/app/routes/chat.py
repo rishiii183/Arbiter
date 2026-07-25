@@ -1,7 +1,8 @@
 """
 chat.py (route)
 ===============
-POST /v1/chat - Authenticated, PII-mediated chat endpoint.
+POST /v1/chat — PII-mediated chat endpoint.
+Forwards scrubbed prompts through the GuardPipeline and proxies to Groq LLM.
 """
 
 from typing import Optional
@@ -14,9 +15,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from app.auth.dependencies import assert_same_org, get_current_user
-from app.db.models import AIProvider, Conversation, Message, OrgApiKey, PolicyAuditLog
+from app.db.models import Conversation, Message
 from app.db.session import AsyncSessionLocal
-from app.services.key_vault import decrypt_api_key
 
 logger = structlog.get_logger(__name__)
 
@@ -42,32 +42,6 @@ class ChatResponse(BaseModel):
     reason: Optional[str] = None
     conversation_id: Optional[str] = None
     session_id: Optional[str] = None
-
-
-def _select_preferred_key(rows: list[OrgApiKey]) -> OrgApiKey:
-    for row in rows:
-        if row.provider == AIProvider.ANTHROPIC:
-            return row
-    return rows[0]
-
-
-def _extract_assistant_text(provider: AIProvider, payload: dict) -> str:
-    if provider == AIProvider.ANTHROPIC:
-        content = payload.get("content", [])
-        if content and isinstance(content, list):
-            first = content[0]
-            if isinstance(first, dict):
-                return str(first.get("text", ""))
-        return ""
-
-    choices = payload.get("choices", [])
-    if choices and isinstance(choices, list):
-        first = choices[0]
-        if isinstance(first, dict):
-            message = first.get("message", {})
-            if isinstance(message, dict):
-                return str(message.get("content", ""))
-    return ""
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -125,58 +99,6 @@ async def chat_endpoint(
         blocked=False,
         response=f"Arbiter Guard Processed Prompt: '{res.clean_text}'",
     )
-
-    assistant_text = _extract_assistant_text(key_row.provider, vendor_response.json())
-    final_response = assistant_text
-    for placeholder, value in pii_result["placeholder_map"].items():
-        final_response = final_response.replace(placeholder, value)
-
-    async with AsyncSessionLocal() as session:
-        async with session.begin():
-            conversation = None
-            if req.session_id:
-                result = await session.execute(
-                    select(Conversation).where(
-                        Conversation.id == req.session_id,
-                        Conversation.org_id == jwt_org_id,
-                        Conversation.user_id == jwt_user_id,
-                    )
-                )
-                conversation = result.scalar_one_or_none()
-
-            if conversation is None:
-                conversation = Conversation(org_id=jwt_org_id, user_id=jwt_user_id)
-                session.add(conversation)
-                await session.flush()
-
-            session.add(
-                Message(
-                    conversation_id=conversation.id,
-                    role="user",
-                    clean_text=clean_text,
-                )
-            )
-            session.add(
-                Message(
-                    conversation_id=conversation.id,
-                    role="assistant",
-                    clean_text=final_response,
-                )
-            )
-            session.add(
-                PolicyAuditLog(
-                    org_id=jwt_org_id,
-                    user_id=jwt_user_id,
-                    action="passed",
-                )
-            )
-
-    return {
-        "blocked": False,
-        "response": final_response,
-        "conversation_id": str(conversation.id),
-        "session_id": str(conversation.id),
-    }
 
 
 @router.get("/conversations")

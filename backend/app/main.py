@@ -54,7 +54,7 @@ def configure_logging(settings: Settings):
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.make_filtering_bound_logger(
-           settings.log_level.upper()
+            settings.log_level.upper()
         ),
         context_class=dict,
         logger_factory=structlog.PrintLoggerFactory(),

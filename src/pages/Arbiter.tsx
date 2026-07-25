@@ -108,8 +108,6 @@ const Dashboard3DCard = () => {
 const Arbiter = () => {
   return (
     <div className="dark min-h-screen bg-surface-dark text-cream">
-
-
       {/* NAV */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-surface-dark/95 border-b border-cream-soft">
         <div className="container h-16 flex items-center justify-between">

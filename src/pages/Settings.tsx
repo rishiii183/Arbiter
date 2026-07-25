@@ -7,17 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import {
   ShieldCheck,
-  Key,
-  Globe2,
-  FileText,
-  CreditCard,
   Plus,
-  RefreshCw,
   CheckCircle2,
-  AlertTriangle,
-  Download,
-  User,
-  LogOut,
 } from "lucide-react";
 
 const Section = ({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) => (

@@ -20,9 +20,7 @@ import {
 import {
   ShieldCheck,
   ArrowUpRight,
-  Info,
   ChevronDown,
-  Hexagon,
   Globe2,
   ArrowRight,
   User,
@@ -160,8 +158,6 @@ const Dashboard = () => {
               />
             </div>
 
-
-
             {/* Center Animated Globe */}
             <div className="relative p-4 rounded-full bg-teal-950/30 border border-teal-500/30 backdrop-blur-sm group-hover:scale-105 group-hover:border-teal-400/60 transition-all globe-animated">
               <Globe2 className="h-20 w-20 md:h-24 md:w-24 text-emerald-400/90 drop-shadow-[0_0_20px_rgba(15,107,94,0.6)]" strokeWidth={0.8} />
@@ -260,7 +256,7 @@ const Dashboard = () => {
             </div>
 
             <p className="mt-3 text-xs text-muted-foreground">
-              Measure anonymization &amp; rehydration efficiency across your sidecar regions
+              Measure anonymization & rehydration efficiency across your sidecar regions
             </p>
           </article>
         </div>

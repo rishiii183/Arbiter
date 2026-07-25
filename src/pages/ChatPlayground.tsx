@@ -12,16 +12,13 @@ import {
   Send,
   ShieldCheck,
   ShieldAlert,
-  Sparkles,
   Bot,
   User,
-  Zap,
   Lock,
   Cpu,
   RefreshCw,
   CheckCircle2,
   AlertTriangle,
-  Flame,
   ChevronDown,
   Check,
 } from "lucide-react";
@@ -244,6 +241,19 @@ export default function ChatPlayground() {
               </div>
             )}
             <div ref={messagesEndRef} />
+          </div>
+          {/* Preset Prompt Chips */}
+          <div className="px-3 pt-2 pb-1 flex flex-wrap gap-1.5">
+            {PRESET_PROMPTS.map((p) => (
+              <button
+                key={p.title}
+                onClick={() => handleSend(p.prompt)}
+                disabled={isLoading}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-muted/50 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer disabled:opacity-40"
+              >
+                <span className="font-semibold text-primary">[{p.badge}]</span>
+              </button>
+            ))}
           </div>
 
           {/* Input Area */}
