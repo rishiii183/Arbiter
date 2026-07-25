@@ -13,10 +13,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "Neue Haas Grotesk Display", "system-ui", "sans-serif"],
-        body: ["Jost", "Söhne", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Freight Display Pro", "Georgia", "serif"],
-        display: ["Outfit", "Satoshi", "system-ui", "sans-serif"],
+        sans: ["Outfit", "Inter", "system-ui", "sans-serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Playfair Display", "Georgia", "serif"],
+        display: ["Outfit", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {

@@ -12,6 +12,7 @@ import Settings from "./pages/Settings.tsx";
 import Audit from "./pages/Audit.tsx";
 import Login from "./pages/Login.tsx";
 import Arbiter from "./pages/Arbiter.tsx";
+import ChatPlayground from "./pages/ChatPlayground.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/arbiter" element={<Arbiter />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chat" element={<ChatPlayground />} />
           <Route path="/policies" element={<Policies />} />
           <Route path="/devices" element={<Devices />} />
           <Route path="/audit" element={<Audit />} />

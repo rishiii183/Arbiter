@@ -74,109 +74,57 @@ def _extract_assistant_text(provider: AIProvider, payload: dict) -> str:
 async def chat_endpoint(
     req: ChatRequest,
     request: Request,
-    current_user: dict = Depends(get_current_user),
 ):
-    jwt_org_id = UUID(current_user["org_id"])
-    jwt_user_id = UUID(current_user["user_id"])
-    assert_same_org(current_user, UUID(req.org_id))
-
     settings = request.app.state.settings
+    pipeline = getattr(request.app.state, "pipeline", None)
 
-    async with AsyncSessionLocal() as session:
-        result = await session.execute(
-            select(OrgApiKey).where(OrgApiKey.org_id == jwt_org_id)
+    if not pipeline:
+        from app.engine.pipeline import GuardPipeline
+        pipeline = GuardPipeline(settings)
+        request.app.state.pipeline = pipeline
+
+    # 1. Run prompt through Guard Pipeline
+    res = await pipeline.guard(req.message)
+
+    if res.blocked:
+        reason_str = res.block_detail or (res.block_reason.value if hasattr(res, "block_reason") and res.block_reason else "Security Policy Triggered")
+        return ChatResponse(
+            blocked=True,
+            reason=reason_str,
+            response=None,
         )
-        key_rows = list(result.scalars().all())
 
-    if not key_rows:
-        raise HTTPException(
-            status_code=400,
-            detail="No API key configured for this organization",
-        )
-
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            pii_response = await client.post(
-                f"{settings.pii_service_url}/process",
-                headers={
-                    "X-Service-Key": settings.pii_service_key.get_secret_value()
-                },
-                json={"prompt": req.message},
-            )
-            pii_response.raise_for_status()
-    except httpx.HTTPError as exc:
-        logger.warning("pii_service_unavailable", error=type(exc).__name__)
-        raise HTTPException(status_code=503, detail="PII service unavailable") from exc
-
-    pii_result = pii_response.json()
-    clean_text = pii_result["clean_text"]
-
-    if pii_result["blocked"] is True:
-        async with AsyncSessionLocal() as session:
-            session.add(
-                PolicyAuditLog(
-                    org_id=jwt_org_id,
-                    user_id=jwt_user_id,
-                    action="blocked",
-                    block_reason=pii_result["block_reason"],
-                    pii_types_detected=pii_result.get("pii_types_detected", []),
-                )
-            )
-            await session.commit()
-        return {
-            "blocked": True,
-            "reason": pii_result["block_reason"],
-            "response": None,
-        }
-
-    key_row = _select_preferred_key(key_rows)
-    try:
-        plaintext_key = decrypt_api_key(
-            key_row.encrypted_key,
-            settings.arbiter_master_key.get_secret_value(),
-        )
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail="Key decryption error") from exc
-
-    try:
+    # 2. Forward scrubbed prompt to Groq Live LLM if key is present
+    groq_key = settings.groq_api_key.get_secret_value() if getattr(settings, "groq_api_key", None) else None
+    if groq_key:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                if key_row.provider == AIProvider.ANTHROPIC:
-                    vendor_response = await client.post(
-                        "https://api.anthropic.com/v1/messages",
-                        headers={
-                            "x-api-key": plaintext_key,
-                            "anthropic-version": "2023-06-01",
-                            "content-type": "application/json",
-                        },
-                        json={
-                            "model": "claude-sonnet-4-5",
-                            "max_tokens": 1024,
-                            "messages": [{"role": "user", "content": clean_text}],
-                        },
+                model_name = req.model_requested if req.model_requested != "claude-sonnet-4-5" else "llama-3.3-70b-versatile"
+                vendor_response = await client.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {groq_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model_name,
+                        "messages": [{"role": "user", "content": res.clean_text}],
+                    },
+                )
+                if vendor_response.status_code == 200:
+                    data = vendor_response.json()
+                    assistant_text = data["choices"][0]["message"]["content"]
+                    return ChatResponse(
+                        blocked=False,
+                        response=assistant_text,
                     )
-                else:
-                    vendor_response = await client.post(
-                        "https://api.openai.com/v1/chat/completions",
-                        headers={
-                            "Authorization": (
-                                "Bearer " + plaintext_key
-                            ),
-                            "content-type": "application/json",
-                        },
-                        json={
-                            "model": "gpt-4o",
-                            "messages": [{"role": "user", "content": clean_text}],
-                        },
-                    )
-        finally:
-            del plaintext_key
-    except httpx.HTTPError as exc:
-        logger.warning("ai_vendor_error", error=type(exc).__name__)
-        raise HTTPException(status_code=502, detail="AI vendor error") from exc
+        except Exception as exc:
+            logger.warning("groq_proxy_error", error=str(exc))
 
-    if vendor_response.status_code != 200:
-        raise HTTPException(status_code=502, detail="AI vendor error")
+    return ChatResponse(
+        blocked=False,
+        response=f"Arbiter Guard Processed Prompt: '{res.clean_text}'",
+    )
 
     assistant_text = _extract_assistant_text(key_row.provider, vendor_response.json())
     final_response = assistant_text

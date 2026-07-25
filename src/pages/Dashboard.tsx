@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import {
   Cpu,
   Activity,
   CheckCircle2,
+  MessageSquareText,
 } from "lucide-react";
 
 import { checkBackendHealth, HealthResponse } from "@/lib/api";
@@ -63,6 +64,14 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            onClick={() => navigate("/chat")}
+            className="btn-primary text-xs flex items-center gap-2 h-9 px-4 cursor-pointer"
+          >
+            <MessageSquareText className="h-3.5 w-3.5" />
+            <span>Launch Live AI Playground</span>
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-3 rounded-full border border-border bg-card/60 hover:bg-card/90 hover:border-primary/40 pl-2.5 pr-4 py-1.5 transition-all cursor-pointer shadow-sm group outline-none">
