@@ -3,6 +3,7 @@ import { Search, BookOpen, Download, ArrowRight, ShieldCheck, Filter, FileText, 
 import { useState } from "react";
 import { ResearchPaper } from "./PaperReaderDialog";
 import { toast } from "sonner";
+import { generatePaperPDF } from "@/lib/pdfGenerator";
 
 interface AllPapersDialogProps {
   papers: ResearchPaper[];
@@ -29,18 +30,14 @@ export function AllPapersDialog({ papers, isOpen, onClose, onSelectPaper }: AllP
 
   const handleDownloadDirect = (e: React.MouseEvent, paper: ResearchPaper) => {
     e.stopPropagation();
-    const fileName = `${paper.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.pdf`;
-    const content = `FORETYX RESEARCH ARCHIVE · ${paper.title.toUpperCase()}\n${paper.citation}\nDate: ${paper.date}\nAuthors: ${paper.authors.join(", ")}\n\nABSTRACT:\n${paper.abstract}\n\nSECTIONS:\n${paper.sections.map(s => `${s.heading}\n${s.content}`).join("\n\n")}`;
-    const blob = new Blob([content], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success(`Downloaded "${fileName}"`);
+    try {
+      const fileName = generatePaperPDF(paper);
+      toast.success(`Downloaded "${fileName}"`, {
+        description: "Valid PDF generated for Adobe Acrobat",
+      });
+    } catch (err) {
+      toast.error("Failed to generate PDF");
+    }
   };
 
   return (

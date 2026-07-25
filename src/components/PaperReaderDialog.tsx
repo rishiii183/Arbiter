@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Download, Copy, Share2, FileText, CheckCircle2, ShieldCheck, User, Calendar, BookOpen, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { generatePaperPDF } from "@/lib/pdfGenerator";
 
 export interface ResearchPaper {
   id: string;
@@ -24,6 +25,8 @@ interface PaperReaderDialogProps {
   onClose: () => void;
 }
 
+import { generatePaperPDF } from "@/lib/pdfGenerator";
+
 export function PaperReaderDialog({ paper, isOpen, onClose }: PaperReaderDialogProps) {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -42,62 +45,19 @@ export function PaperReaderDialog({ paper, isOpen, onClose }: PaperReaderDialogP
     setDownloading(true);
 
     setTimeout(() => {
-      const fileName = `${paper.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.pdf`;
-      const content = `================================================================================
-FORETYX AI SECURITY RESEARCH ADVISORY
-================================================================================
-
-TITLE: ${paper.title.toUpperCase()}
-CATEGORY: ${paper.tag}
-PUBLICATION DATE: ${paper.date}
-AUTHORS: ${paper.authors.join(", ")}
-CITATION: ${paper.citation}
-SECURITY ATTESTATION: Foretyx Enclave Verified (CC BY-NC 4.0)
-
---------------------------------------------------------------------------------
-EXECUTIVE ABSTRACT
---------------------------------------------------------------------------------
-${paper.abstract}
-
---------------------------------------------------------------------------------
-PAPER SECTIONS & ANALYSIS
---------------------------------------------------------------------------------
-${paper.sections
-  .map(
-    (s) =>
-      `${s.heading}\n\n${s.content}${
-        s.codeSnippet ? `\n\n[PROOF OF CONCEPT / ARTIFACT]:\n${s.codeSnippet}` : ""
-      }`
-  )
-  .join("\n\n--------------------------------------------------------------------------------\n\n")}
-
-================================================================================
-VERIFICATION & ATTESTATION
-Attested by Foretyx Security Enclave (Mumbai Region)
-Cryptographic Signature: SHA256:${Math.random().toString(36).substring(2)}${Date.now().toString(36)}
-© 2026 Foretyx Security Research · Bengaluru, India
-================================================================================
-`;
-
-      const blob = new Blob([content], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      setDownloading(false);
-      setDownloaded(true);
-
-      toast.success(`Downloaded "${fileName}"`, {
-        description: "Saved to your device Downloads folder"
-      });
-
+      try {
+        const fileName = generatePaperPDF(paper);
+        setDownloading(false);
+        setDownloaded(true);
+        toast.success(`Downloaded "${fileName}"`, {
+          description: "Valid PDF created for Adobe Acrobat and PDF readers",
+        });
+      } catch (err) {
+        setDownloading(false);
+        toast.error("Failed to generate PDF");
+      }
       setTimeout(() => setDownloaded(false), 3000);
-    }, 400);
+    }, 200);
   };
 
   const handleShare = () => {
