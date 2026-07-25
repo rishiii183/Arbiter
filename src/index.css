@@ -1,0 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=Jost:wght@400;500;600&family=Outfit:wght@700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Foretyx — Editorial security research firm.
+   Cream-dominant, ink body, deep teal authority, mustard as the India signal.
+   Reference bar: Anthropic, Stripe, Linear. Born mature. */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* Brand palette — translated to HSL */
+    --cream: 36 38% 93%;            /* #F5F0E8 */
+    --ink:   24 11% 9%;             /* #1C1917 */
+
+    --teal-deep:  170 76% 24%;      /* #0F6B5E */
+    --teal-light: 170 70% 33%;      /* #1A8F7E */
+    --teal-wash:  168 26% 93%;      /* #E8F2F0 */
+
+    --mustard:        37 75% 44%;   /* #C4891E */
+    --mustard-light:  41 84% 67%;   /* #F0C866 */
+
+    --surface-dark: 80 4% 7%;       /* #111210 */
+    --surface-mid:  120 4% 13%;     /* #1E2220 */
+
+    /* Semantic mapping — firm page (cream) */
+    --background: var(--cream);
+    --foreground: var(--ink);
+
+    --card: 0 0% 100%;
+    --card-foreground: var(--ink);
+
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--ink);
+
+    --muted: var(--teal-wash);
+    --muted-foreground: 24 8% 38%;
+
+    --secondary: var(--teal-wash);
+    --secondary-foreground: var(--ink);
+
+    --primary: var(--teal-deep);
+    --primary-foreground: var(--cream);
+
+    --accent: var(--teal-deep);
+    --accent-foreground: var(--cream);
+
+    --warning: var(--mustard);
+    --warning-foreground: var(--ink);
+
+    --success: 152 60% 32%;
+    --success-foreground: var(--cream);
+
+    --destructive: 358 65% 48%;
+    --destructive-foreground: var(--cream);
+
+    --info: 212 70% 42%;
+    --info-foreground: var(--cream);
+
+    --border: var(--ink);            /* used at /8, /16, /30 opacities */
+    --input: 24 8% 80%;
+    --ring: var(--teal-deep);
+
+    --radius: 0.25rem;               /* 4px — slightly rounded, not pill */
+  }
+
+  /* Dark — for arbiter.foretyx.in product surfaces and the console */
+  .dark {
+    color-scheme: dark;
+
+    --background: var(--surface-dark);
+    --foreground: var(--cream);
+
+    --card: var(--surface-mid);
+    --card-foreground: var(--cream);
+
+    --popover: var(--surface-mid);
+    --popover-foreground: var(--cream);
+
+    --muted: var(--surface-mid);
+    --muted-foreground: 36 18% 70%;
+
+    --secondary: var(--surface-mid);
+    --secondary-foreground: var(--cream);
+
+    --primary: var(--teal-light);
+    --primary-foreground: var(--surface-dark);
+
+    --accent: var(--teal-light);
+    --accent-foreground: var(--surface-dark);
+
+    --border: 36 38% 93%;            /* cream — used at /6, /15, /30 */
+    --input: 0 0% 25%;
+    --ring: var(--teal-light);
+  }
+
+  * {
+    border-color: hsl(var(--border) / 0.08);
+  }
+
+  html {
+    font-family: 'Jost', 'Söhne', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+    line-height: 1.7;
+  }
+
+  ::selection { background: hsl(var(--primary) / 0.2); color: hsl(var(--foreground)); }
+
+  /* Editorial display — serif (Playfair as licensed-fallback for Freight) */
+  .display-serif {
+    font-family: 'Playfair Display', 'Freight Display Pro', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  .display-serif-medium {
+    font-family: 'Playfair Display', 'Freight Display Pro', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+
+  /* Geometric sans for Arbiter product hero (Outfit as Satoshi/Clash fallback) */
+  .display-sans {
+    font-family: 'Outfit', 'Satoshi', 'Clash Display', system-ui, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.0;
+  }
+
+  /* Brand sans — Inter as Neue Haas Grotesk fallback */
+  .font-brand {
+    font-family: 'Inter', 'Neue Haas Grotesk Display', system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
+  .font-display { @apply font-brand; font-weight: 500; letter-spacing: -0.01em; }
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+}
+
+@layer components {
+  /* The single most-repeated typographic element */
+  .section-label {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--teal-deep));
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .dark .section-label { color: hsl(var(--teal-light)); }
+
+  /* Architectural rule above firm-page section labels */
+  .rule-teal {
+    display: block;
+    width: 120px;
+    height: 1px;
+    background: hsl(var(--teal-deep));
+    margin-bottom: 16px;
+  }
+
+  /* Mustard 40×2 signature rule above pillar columns */
+  .rule-mustard {
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: hsl(var(--mustard));
+    margin-bottom: 20px;
+  }
+
+  /* Buttons — flat, 4px radius, ALL CAPS, tracked */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2;
+    background: hsl(var(--teal-deep));
+    color: hsl(var(--cream));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border-radius: 4px;
+    transition: background 200ms ease;
+  }
+  .btn-primary:hover { background: hsl(var(--teal-light)); }
+  .btn-primary .arrow { transition: transform 200ms ease; }
+  .btn-primary:hover .arrow { transform: translateX(2px); }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2;
+    background: transparent;
+    color: hsl(var(--ink));
+    border: 1.5px solid hsl(var(--ink) / 0.3);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 12.5px 26.5px;
+    border-radius: 4px;
+    transition: border-color 200ms ease;
+  }
+  .btn-secondary:hover { border-color: hsl(var(--ink)); }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2;
+    background: transparent;
+    color: hsl(var(--cream));
+    border: 1.5px solid hsl(var(--cream) / 0.3);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 12.5px 26.5px;
+    border-radius: 4px;
+    transition: border-color 200ms ease;
+  }
+  .btn-ghost:hover { border-color: hsl(var(--cream)); }
+
+  .text-link {
+    color: hsl(var(--teal-deep));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .text-link .arrow { transition: transform 200ms ease; }
+  .text-link:hover .arrow { transform: translateX(2px); }
+}
+
+@layer utilities {
+  .surface-cream    { background: hsl(var(--cream)); color: hsl(var(--ink)); }
+  .surface-wash     { background: hsl(var(--teal-wash)); color: hsl(var(--ink)); }
+  .surface-dark     { background: hsl(var(--surface-dark)); color: hsl(var(--cream)); }
+  .surface-mid      { background: hsl(var(--surface-mid)); color: hsl(var(--cream)); }
+
+  .text-mustard     { color: hsl(var(--mustard)); }
+  .text-mustard-light { color: hsl(var(--mustard-light)); }
+  .text-teal-deep   { color: hsl(var(--teal-deep)); }
+  .text-teal-light  { color: hsl(var(--teal-light)); }
+  .text-cream       { color: hsl(var(--cream)); }
+  .text-ink         { color: hsl(var(--ink)); }
+  .bg-teal-deep     { background: hsl(var(--teal-deep)); }
+  .bg-teal-wash     { background: hsl(var(--teal-wash)); }
+  .bg-surface-dark  { background: hsl(var(--surface-dark)); }
+  .bg-surface-mid   { background: hsl(var(--surface-mid)); }
+  .bg-cream         { background: hsl(var(--cream)); }
+  .bg-ink           { background: hsl(var(--ink)); }
+  .border-ink-soft  { border-color: hsl(var(--ink) / 0.08); }
+  .border-ink-mid   { border-color: hsl(var(--ink) / 0.16); }
+  .border-cream-soft{ border-color: hsl(var(--cream) / 0.06); }
+  .border-cream-mid { border-color: hsl(var(--cream) / 0.15); }
+  .border-teal-deep { border-color: hsl(var(--teal-deep)); }
+
+  /* Cream grain — subtle SVG noise overlay */
+  .grain-cream::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 0;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Ticker */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee { animation: marquee 30s linear infinite; }
+
+  @keyframes status-ping {
+    0%   { transform: scale(1);   opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  .animate-status-ping { animation: status-ping 2s ease-out infinite; }
+}
