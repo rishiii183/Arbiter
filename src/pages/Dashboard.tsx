@@ -139,12 +139,7 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Orbiting Satellite Shield Icon */}
-            <div className="absolute inset-0 flex items-center justify-center satellite-orbit pointer-events-none">
-              <div className="h-8 w-8 rounded-full bg-surface-dark border border-teal-400/60 shadow-[0_0_15px_rgba(26,143,126,0.6)] flex items-center justify-center">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              </div>
-            </div>
+
 
             {/* Center Animated Globe */}
             <div className="relative p-4 rounded-full bg-teal-950/30 border border-teal-500/30 backdrop-blur-sm group-hover:scale-105 group-hover:border-teal-400/60 transition-all globe-animated">
