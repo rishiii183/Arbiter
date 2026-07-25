@@ -33,6 +33,8 @@ from app.routes import health, admin, auth
 from app.routes import chat as chat_route
 from app.routes.api_keys import router as api_keys_router
 
+from app.engine.pipeline import GuardPipeline
+
 # ── Structured Logging Configuration ─────────────────────────────────────────
 
 def configure_logging(settings: Settings):
@@ -89,6 +91,7 @@ async def lifespan(app: FastAPI):
 
     app.state.settings = settings
     app.state.startup_time = time.time()
+    app.state.pipeline = GuardPipeline(settings)
 
     # Startup self-test
     logger.info("startup_status")

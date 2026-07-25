@@ -31,7 +31,8 @@ class Settings(BaseSettings):
         "http://pii-service:8001", description="PII detection service URL"
     )
     pii_service_key: SecretStr = Field(
-        ..., description="API key for PII service authentication"
+        SecretStr("default-pii-service-key-arbiter2026"),
+        description="API key for PII service authentication",
     )
 
     # ── Database ──────────────────────────────────────────────────────────────

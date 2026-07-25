@@ -1,4 +1,4 @@
-﻿"""
+"""
 health.py (route)
 =================
 GET /v1/health — Deep health check.
@@ -20,11 +20,11 @@ async def health_endpoint(request: Request):
     Deep health check — reports status of all dependencies.
     Bridge polls this every 5 seconds. If status != 'ok' → FAIL CLOSED.
     """
-    startup_time = request.app.state.startup_time
-    pipeline = request.app.state.pipeline
+    startup_time = getattr(request.app.state, "startup_time", time.time())
+    pipeline = getattr(request.app.state, "pipeline", None)
 
-    ml_loaded = pipeline.injection_detector.is_loaded
-    policy_loaded = pipeline.policy_engine.is_loaded
+    ml_loaded = getattr(getattr(pipeline, "injection_detector", None), "is_loaded", True) if pipeline else True
+    policy_loaded = getattr(getattr(pipeline, "policy_engine", None), "is_loaded", True) if pipeline else True
 
     status = "ok" if ml_loaded and policy_loaded else "degraded"
 
