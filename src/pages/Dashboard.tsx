@@ -66,28 +66,28 @@ const Dashboard = () => {
                 <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors ml-1" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 p-2 space-y-1 bg-card border-border shadow-xl">
+            <DropdownMenuContent align="end" className="w-56 p-2 space-y-1 dark bg-surface-mid border border-cream-soft text-cream shadow-2xl backdrop-blur-xl">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Riya Sharma</p>
-                  <p className="text-xs leading-none text-muted-foreground">riya.sharma@apexcare.in</p>
+                  <p className="text-sm font-medium leading-none text-cream">Riya Sharma</p>
+                  <p className="text-xs leading-none text-cream/55">riya.sharma@apexcare.in</p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
-                <User className="mr-2 h-4 w-4 text-primary" />
+              <DropdownMenuSeparator className="bg-cream-soft/30" />
+              <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer text-cream/90 focus:bg-white/10 focus:text-cream">
+                <User className="mr-2 h-4 w-4 text-teal-light" />
                 <span>Account & Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/policies")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate("/policies")} className="cursor-pointer text-cream/90 focus:bg-white/10 focus:text-cream">
                 <ShieldCheck className="mr-2 h-4 w-4 text-emerald-400" />
                 <span>DPDP Policies</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/devices")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate("/devices")} className="cursor-pointer text-cream/90 focus:bg-white/10 focus:text-cream">
                 <Cpu className="mr-2 h-4 w-4 text-teal-light" />
                 <span>Enclave Devices</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/login")} className="cursor-pointer text-destructive focus:text-destructive">
+              <DropdownMenuSeparator className="bg-cream-soft/30" />
+              <DropdownMenuItem onClick={() => navigate("/login")} className="cursor-pointer text-rose-400 focus:bg-rose-950/40 focus:text-rose-300">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sign Out</span>
               </DropdownMenuItem>
