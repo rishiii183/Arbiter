@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+
+  frontend:
+    image: ghcr.io/arbiter-ai/frontend:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - arbiter-net
+
+  backend:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://arbiter:${DB_PASSWORD}@db:5432/arbiter
+      - ARBITER_SECRET_KEY=${ARBITER_SECRET_KEY}
+      - ARBITER_MASTER_KEY=${ARBITER_MASTER_KEY}
+      - PII_SERVICE_URL=http://pii-service:8001
+      - PII_SERVICE_KEY=${PII_SERVICE_KEY}
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+    depends_on:
+      - db
+      - pii-service
+    restart: always
+    networks:
+      - arbiter-net
+    healthcheck:
+      test: ["CMD", "python", "-c",
+        "import httpx; httpx.get('http://localhost:8000/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  pii-service:
+    image: ghcr.io/arbiter-ai/pii-service:latest
+    environment:
+      - PII_SERVICE_KEY=${PII_SERVICE_KEY}
+    expose:
+      - "8001"
+    restart: always
+    networks:
+      - arbiter-net
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=arbiter
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=arbiter
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - arbiter-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arbiter"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+
+networks:
+  arbiter-net:
+    driver: bridge

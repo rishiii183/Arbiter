@@ -23,7 +23,12 @@
 
 ```text
 foretyx-guardian/
-├── src/
+├── backend/                        # Python FastAPI & TEE Enclave Data Plane
+│   ├── app/                        # Anonymization, token vault & gateway APIs
+│   ├── alembic/                    # Database migrations
+│   ├── Dockerfile & docker-compose # Enclave container configuration
+│   └── requirements.txt            # Data plane dependencies
+├── src/                            # Enterprise React Frontend & Research Firm UI
 │   ├── components/
 │   │   ├── AllPapersDialog.tsx     # Full research library dialog & search filter
 │   │   ├── PaperReaderDialog.tsx   # Interactive research paper reader modal
