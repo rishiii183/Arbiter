@@ -181,8 +181,8 @@ class InjectionDetector:
     """
 
     def __init__(self, settings: Settings):
-        self.block_threshold = settings.ml_block_threshold
-        self.escalate_threshold = settings.ml_escalate_threshold
+        self.block_threshold = getattr(settings, "ml_block_threshold", 0.85)
+        self.escalate_threshold = getattr(settings, "ml_escalate_threshold", 0.50)
         self._loaded = True
         logger.info(
             "injection_detector_initialized",

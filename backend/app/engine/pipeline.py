@@ -40,7 +40,7 @@ class GuardPipeline:
         logger.info(
             "guard_pipeline_initialized",
             ml_model_loaded=self.injection_detector.is_loaded,
-            fail_behavior=settings.fail_behavior,
+            fail_behavior=getattr(settings, "fail_behavior", "CLOSED"),
             owasp_coverage="10/10",
             aadhaar_verhoeff=True,
             tiktoken_budget=True,
@@ -100,11 +100,12 @@ class GuardPipeline:
                 timings,
             )
 
-        if len(raw_prompt) > self.settings.max_prompt_length:
+        max_len = getattr(self.settings, "max_prompt_length", 8192)
+        if len(raw_prompt) > max_len:
             return self._blocked(
                 raw_prompt,
                 BlockReason.PROMPT_TOO_LONG,
-                f"Prompt length {len(raw_prompt)} exceeds max {self.settings.max_prompt_length}",
+                f"Prompt length {len(raw_prompt)} exceeds max {max_len}",
                 t0,
                 timings,
             )

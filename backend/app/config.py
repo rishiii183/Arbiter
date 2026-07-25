@@ -8,7 +8,7 @@ No hardcoded secrets — ever.
 
 from pydantic_settings import BaseSettings
 from pydantic import Field, SecretStr, field_validator
-from typing import List
+from typing import List, Optional
 from cryptography.fernet import Fernet
 
 
@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     database_url: SecretStr = Field(
         ...,
         description="PostgreSQL database URL, e.g. postgresql+asyncpg://user:pass@host:5432/db",
+    )
+
+    # ── LLM Provider Keys ──────────────────────────────────────────────────────
+    groq_api_key: Optional[SecretStr] = Field(
+        None, description="Groq API Key for live LLM proxy inference"
     )
 
     # ── Security / Authentication ──────────────────────────────────────────────
