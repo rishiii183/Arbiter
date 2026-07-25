@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { PaperReaderDialog, ResearchPaper } from "@/components/PaperReaderDialog";
-import { toast } from "sonner";
+import { AllPapersDialog } from "@/components/AllPapersDialog";
 
 const researchPapers: ResearchPaper[] = [
   {
@@ -76,18 +76,64 @@ const researchPapers: ResearchPaper[] = [
         content: "Models evaluated without enclave-level data protection leaked PII in 68% of Hinglish adversarial scenarios. Implementing local deterministic encryption at the edge prior to model invocation reduced leak probability to zero."
       }
     ]
+  },
+  {
+    id: "enclave-pii-benchmarks",
+    tag: "Benchmark",
+    title: "Cryptographic Enclave Tokenization Latency & Throughput",
+    date: "April 05, 2026",
+    authors: ["S. Venkatesh", "A. Mehta"],
+    citation: "Foretyx Performance Benchmarks 2026-04",
+    abstract: "Evaluating AWS Nitro & Azure SEV-SNP enclave latency overhead during real-time 44+ entity PII redaction.",
+    sections: [
+      {
+        heading: "1. Abstract & Scope",
+        content: "Enterprise adoption of hardware-attested Trusted Execution Environments (TEEs) hinges on throughput performance. This paper measures microsecond overhead when passing high-throughput prompts through Foretyx Arbiter enclave tokenizers."
+      },
+      {
+        heading: "2. Benchmark Methodology",
+        content: "Over 10,000,000 synthetic patient and banking prompts were executed across dual AWS Nitro Enclaves and Azure SEV-SNP nodes. Average PII masking latency measured under 1.8ms per 1,000 input tokens."
+      }
+    ]
+  },
+  {
+    id: "speculative-decoding-sidechannel",
+    tag: "Security Research",
+    title: "Side-Channel Information Leaks in Speculative LLM Decoding",
+    date: "January 11, 2026",
+    authors: ["Dr. K. Ramanathan", "M. Roy"],
+    citation: "Foretyx Research Pub 2026-01-SEC",
+    abstract: "Analyzing token acceptance rate side-channels in speculative draft models to infer confidential target outputs.",
+    sections: [
+      {
+        heading: "1. Overview",
+        content: "Speculative decoding speeds up inference by running a small draft model ahead of a target LLM. We demonstrate how monitoring speculative acceptance rates exposes character-level hints about private system prompts."
+      }
+    ]
+  },
+  {
+    id: "dpdp-act-2023-compliance-pack",
+    tag: "Compliance",
+    title: "DPDP Act 2023 Technical Architecture Guidelines for LLMs",
+    date: "May 19, 2026",
+    authors: ["R. Gupta", "P. Sharma"],
+    citation: "Foretyx Compliance Framework 2026",
+    abstract: "A reference architecture for Data Fiduciaries deploying generative AI while adhering to Section 8 data minimization requirements.",
+    sections: [
+      {
+        heading: "1. Statutory Overview",
+        content: "India's Digital Personal Data Protection Act (DPDP) 2023 requires strict consent verification and zero unverified PII egress to third-party cloud LLM providers."
+      }
+    ]
   }
 ];
 
 const Landing = () => {
   const [selectedPaper, setSelectedPaper] = useState<ResearchPaper | null>(null);
+  const [isAllPapersOpen, setIsAllPapersOpen] = useState(false);
 
   const handleOpenPaper = (paper: ResearchPaper) => {
     setSelectedPaper(paper);
-  };
-
-  const handleOpenFirstPaper = () => {
-    setSelectedPaper(researchPapers[0]);
   };
 
   return (
@@ -212,15 +258,15 @@ const Landing = () => {
               </h2>
             </div>
             <button
-              onClick={handleOpenFirstPaper}
-              className="text-link cursor-pointer bg-transparent border-0"
+              onClick={() => setIsAllPapersOpen(true)}
+              className="text-link cursor-pointer bg-transparent border-0 hover:underline font-medium"
             >
               All papers <span className="arrow">→</span>
             </button>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {researchPapers.map((p) => (
+            {researchPapers.slice(0, 3).map((p) => (
               <article
                 key={p.title}
                 onClick={() => handleOpenPaper(p)}
@@ -310,7 +356,6 @@ const Landing = () => {
           <div className="font-sans text-[12px] text-ink/55 flex flex-wrap gap-6">
             <a href="#research" className="hover:text-ink">Research</a>
             <Link to="/arbiter" target="_blank" rel="noopener noreferrer" className="hover:text-ink">Arbiter</Link>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-ink">Open source</a>
             <a href="mailto:contact@foretyx.in" className="hover:text-ink">Contact</a>
           </div>
           <div className="flex flex-col items-end gap-1">
@@ -329,6 +374,14 @@ const Landing = () => {
         paper={selectedPaper}
         isOpen={!!selectedPaper}
         onClose={() => setSelectedPaper(null)}
+      />
+
+      {/* All Papers Catalog Dialog */}
+      <AllPapersDialog
+        papers={researchPapers}
+        isOpen={isAllPapersOpen}
+        onClose={() => setIsAllPapersOpen(false)}
+        onSelectPaper={(paper) => setSelectedPaper(paper)}
       />
     </div>
   );
