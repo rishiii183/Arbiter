@@ -10,6 +10,8 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  Menu,
+  X,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
@@ -32,44 +34,79 @@ export function AppShell({
 }) {
   const { pathname } = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const current = nav.find((n) => pathname.startsWith(n.to))?.label ?? "Dashboard";
 
   return (
     <div className="dark min-h-screen bg-background text-foreground flex">
-      {/* Sidebar */}
+      {/* Mobile Drawer Backdrop */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden transition-opacity"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Desktop & Mobile Sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex shrink-0 flex-col sticky top-0 h-screen border-r border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 ease-in-out z-40",
-          isCollapsed ? "w-16" : "w-64"
+          "flex shrink-0 flex-col sticky top-0 h-screen border-r border-border/30 bg-card/40 backdrop-blur-sm transition-all duration-300 ease-in-out z-50",
+          // Desktop sidebar rules
+          "hidden lg:flex",
+          isCollapsed ? "lg:w-16" : "lg:w-64",
+          // Mobile sidebar rules (overlay drawer)
+          isMobileOpen && "flex fixed inset-y-0 left-0 w-64 bg-card z-[60]"
         )}
       >
         {/* Sidebar Header with Logo & Toggle Button */}
-        <div className="h-14 px-4 flex items-center justify-between">
-          {!isCollapsed ? (
-            <NavLink to="/">
-              <Logo />
-            </NavLink>
-          ) : (
-            <NavLink to="/" className="mx-auto font-bold text-lg text-primary">
-              F
-            </NavLink>
+        <div
+          className={cn(
+            "h-14 flex items-center justify-between border-b border-border/30",
+            isCollapsed && !isMobileOpen ? "px-2" : "px-4"
           )}
+        >
+          <NavLink to="/" className="flex items-center shrink-0">
+            {isCollapsed && !isMobileOpen ? (
+              <Logo showWordmark={false} size="sm" />
+            ) : (
+              <Logo size="md" />
+            )}
+          </NavLink>
+
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg border border-border/40 hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={() => {
+              if (isMobileOpen) {
+                setIsMobileOpen(false);
+              } else {
+                setIsCollapsed(!isCollapsed);
+              }
+            }}
+            className="p-1.5 rounded-lg border border-border/40 hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0"
+            title={
+              isMobileOpen
+                ? "Close menu"
+                : isCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+            }
           >
-            {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            {isMobileOpen ? (
+              <X className="h-4 w-4" />
+            ) : isCollapsed ? (
+              <PanelLeftOpen className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
           </button>
         </div>
 
-        {/* Workspace info (visible when expanded) */}
-        {!isCollapsed && (
+        {/* Workspace info */}
+        {!isCollapsed || isMobileOpen ? (
           <div className="px-3 py-4">
             <div className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Workspace
             </div>
-            <div className="mx-1 mb-3 flex items-center gap-2.5 rounded-lg border border-border/40 bg-background/50 p-2.5">
+            <div className="mx-1 mb-1 flex items-center gap-2.5 rounded-lg border border-border/40 bg-background/50 p-2.5">
               <div className="h-8 w-8 rounded-md bg-primary/15 ring-1 ring-primary/30 flex items-center justify-center shrink-0">
                 <span className="text-xs font-bold text-primary">AC</span>
               </div>
@@ -81,6 +118,15 @@ export function AppShell({
               </div>
             </div>
           </div>
+        ) : (
+          <div className="py-3 flex justify-center border-b border-border/20">
+            <div
+              className="h-8 w-8 rounded-md bg-primary/15 ring-1 ring-primary/30 flex items-center justify-center shrink-0 cursor-pointer"
+              title="Apex Care Hospitals (DPDP compliant)"
+            >
+              <span className="text-xs font-bold text-primary">AC</span>
+            </div>
+          </div>
         )}
 
         {/* Navigation */}
@@ -89,30 +135,41 @@ export function AppShell({
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setIsMobileOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                  isCollapsed ? "justify-center px-0" : "",
+                  "flex items-center gap-3 rounded-md text-sm transition-colors",
+                  isCollapsed && !isMobileOpen
+                    ? "justify-center h-10 w-10 mx-auto px-0"
+                    : "px-3 py-2",
                   isActive
                     ? "bg-primary/10 text-foreground ring-1 ring-primary/25 font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                 )
               }
-              title={isCollapsed ? item.label : undefined}
+              title={isCollapsed && !isMobileOpen ? item.label : undefined}
             >
               <item.icon className="h-4 w-4 shrink-0" />
-              {!isCollapsed && <span>{item.label}</span>}
+              {(!isCollapsed || isMobileOpen) && <span>{item.label}</span>}
             </NavLink>
           ))}
         </nav>
 
         {/* User profile footer */}
         <div className="p-3 border-t border-border/30 mt-auto">
-          <div className={cn("flex items-center gap-2.5 px-1 py-1", isCollapsed ? "justify-center" : "")}>
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/40 to-primary/10 ring-1 ring-border/50 flex items-center justify-center text-xs font-semibold shrink-0">
+          <div
+            className={cn(
+              "flex items-center gap-2.5 px-1 py-1",
+              isCollapsed && !isMobileOpen ? "justify-center" : ""
+            )}
+          >
+            <div
+              className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/40 to-primary/10 ring-1 ring-border/50 flex items-center justify-center text-xs font-semibold shrink-0"
+              title={isCollapsed && !isMobileOpen ? "Riya Sharma (Compliance Admin)" : undefined}
+            >
               RS
             </div>
-            {!isCollapsed && (
+            {(!isCollapsed || isMobileOpen) && (
               <>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">Riya Sharma</div>
@@ -131,6 +188,15 @@ export function AppShell({
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-background/70 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileOpen(true)}
+              className="lg:hidden p-1.5 rounded-lg border border-border/40 hover:bg-muted/40 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+              title="Open navigation menu"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+
             <span className="text-sm text-muted-foreground">Foretyx</span>
             <span className="text-muted-foreground/50">/</span>
             <span className="text-sm font-medium">{current}</span>
